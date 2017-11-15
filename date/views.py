@@ -53,13 +53,20 @@ def create_comments(comment_data):
 def date(request):
     if (request.method =='POST'):
     	#create a date for the loser
+        print (request.body)
     	if create_date(request.body) is False:
             return HttpResponseBadRequest('ImBuyin -- Date Not Created')
     	return HttpResponse('ImBuyin -- Date Created')
     elif (request.method == 'GET'):
     	#Get all the dates!!!
     	all_dates = serializers.serialize("json", Date.objects.all())
-    	return JsonResponse(all_dates, safe=False)
+        #clean up the data
+        json_potential_dates = {}
+        json_potential_dates['potential_dates'] = []
+        for date in json.loads(all_dates):
+            json_potential_dates['potential_dates'].append(date['fields'])
+    	#return JsonResponse(json.dumps(json_potential_dates), safe=False)
+        return JsonResponse(json_potential_dates, safe=False)
     elif (request.method == 'PUT'):
         #Update Accept field
         if update_date(request.body) is False:
