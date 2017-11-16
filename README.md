@@ -4,7 +4,7 @@
 
 Version 1.0
 
-## How do I get set up? ##
+### How do I get set up? ###
 
 Clone down the project
 
