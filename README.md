@@ -1,36 +1,45 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+## ImBuyin Documentation ##
 
-### What is this repository for? ###
-
-* This is 'ImBuyin'
-* Version 1.0
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+Version 1.0
 
 ### How do I get set up? ###
 
 Clone down the project
-Stay in your root dir before the project dirs start
 
 All commands should be run as root (sudo)
 
-* Create a virtual env
+### Create a virtual env ###
 
-pip install virtualenv
+`pip install virtualenv`
 
-activate the virtualenv, i.e.:
+Activate the virtualenv, i.e.:
 
-cd virt_imbuyin/
-source activate
+`mkdir virt_imbuyin/  cd virt_imbuyin/`
+`source activate`
 
-* Install Django
-pip install Django
+### Install Postgres DB ###
 
-* How to run tests
-* Deployment instructions
-* Run the server
-python manager.py runserver <port: 8080> 
+[Postgres](https://www.postgresql.org/download/macosx/)
+
+### Install Django ###
+
+`pip install Django`
+
+`pip install psycopg2` -- this is for python postgres package, say that 3 times fast :).
+
+### Deployment instructions ###
+
+Run migrate on the DB
+
+`python manage.py migrate`
+
+### Run the server ###
+
+`python manager.py runserver <port: 8080> `
+
+### How to run tests ###
 
 ### Contribution guidelines ###
 
@@ -40,4 +49,6 @@ python manager.py runserver <port: 8080>
 
 ### Who do I talk to? ###
 
-* nate_ben@live.com -- Nate Bensimon
+nate_ben@live.com -- Nate Bensimon
+
+[Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
