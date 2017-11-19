@@ -15,12 +15,13 @@ class User(models.Model):
 class Date(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, 
 		default='test@test.com')
-	date_place = models.TextField()
-	create_date = models.DateTimeField('date created')
+	where = models.TextField()
+	when = models.DateTimeField('date created')
 	accepted = models.BooleanField(default=False)
 	category = models.CharField(max_length=50, default='General')
 	interested = models.SmallIntegerField(default=0)
 	hot_date_meter = models.SmallIntegerField(default=1)
+	interested_users = models.CharField(max_length=1000, default='')
 
 class Feedback(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE,

@@ -91,8 +91,8 @@ def create_date(date_data):
         new_user = User(email=enc_data['email'])
         new_user.save()
         new_user.date_set.create(
-            date_place = enc_data['place'],
-            create_date = enc_data['when'],
+            where = enc_data['where'],
+            when = enc_data['when'],
             category = enc_data['category'],
             accepted = enc_data['accepted'])
     except Exception as e:
