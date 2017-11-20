@@ -58,26 +58,31 @@ def date(request):
             return HttpResponseBadRequest('ImBuyin -- Date Not Created')
     	return HttpResponse('ImBuyin -- Date Created')
     elif (request.method == 'GET'):
+        query_params = request.GET
+        user = ''
         #get filtered dates
-        if (request.GET):
-          user = request.GET['email']
-          print user
-          if (user):
-            dates_for_email = serializers.serialize("json", 
-            Date.objects.filter(user__exact=user))
-            my_dates = {}
-            my_dates['my_dates'] = []
-            for date in json.loads(dates_for_email):
-                my_dates['my_dates'].append(date['fields'])
-            return JsonResponse(my_dates, safe=False)
-    	
-        #Get all the dates!!!
+        if query_params:
+          user = query_params.get('email')
+          show = query_params.get('show')
+          if show is None:
+            if user:
+               dates_for_email = serializers.serialize("json", 
+               Date.objects.filter(user__exact=user))
+               my_dates = {}
+               my_dates['my_dates'] = []
+               for date in json.loads(dates_for_email):
+                   my_dates['my_dates'].append(date['fields'])
+               return JsonResponse(my_dates, safe=False)   
+        
         all_dates = serializers.serialize("json", Date.objects.all())
         #clean up the data
         json_potential_dates = {}
         json_potential_dates['potential_dates'] = []
         for date in json.loads(all_dates):
-            json_potential_dates['potential_dates'].append(date['fields'])
+            # don't add my date to the list
+            #print date['fields']['user'] # DEBUG
+            if user != date['fields']['user']: 
+               json_potential_dates['potential_dates'].append(date['fields'])
         return JsonResponse(json_potential_dates, safe=False)
     elif (request.method == 'PUT'):
         #Update Accept field
