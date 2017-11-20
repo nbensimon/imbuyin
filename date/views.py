@@ -104,14 +104,28 @@ def create_date(date_data):
         print (e.message)
         return False
 
-def update_date(date_data):
-    enc_data = json.loads(date_data)
+def update_date(date):
+    json_date = json.loads(date)
+    print json_date
+    accepted = False
+    interested = False
+    if 'accepted' in json_date:
+       accepted = True
+    if 'interested_email' in json_date:
+       interested = True
     try:
-        get_date_to_update = Date.objects.get(date_email=enc_data['email'])
+        date_to_update = Date.objects.get(user=json_date['email'])
     except Exception:
         return False 
-    if (get_date_to_update):
-        get_date_to_update.accepted = enc_data['accepted']
-    get_date_to_update.save()
+    if date_to_update:
+       if accepted:
+          date_to_update.accepted = json_date['accepted']
+       if interested:
+          print date_to_update.interested_users
+          if date_to_update.interested_users is None:
+             date_to_update.interested_users = json_date['interested_email']
+          else:
+             date_to_update.interested_users += ';' + json_date['interested_email']
+    date_to_update.save()
 
 
