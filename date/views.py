@@ -70,8 +70,15 @@ def date(request):
                Date.objects.filter(user__exact=user))
                my_dates = {}
                my_dates['my_dates'] = []
+
                for date in json.loads(dates_for_email):
                    my_dates['my_dates'].append(date['fields'])
+               #Add the interested users number to response
+               interested_user_count = 0
+               for date in my_dates.get('my_dates'):
+                 for interested_user in date.get('interested_users').split(';'):
+                   interested_user_count += 1
+                 date['interested_user_count'] = interested_user_count
                return JsonResponse(my_dates, safe=False)   
         
         all_dates = serializers.serialize("json", Date.objects.all())
