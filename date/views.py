@@ -96,7 +96,24 @@ def date(request):
         if update_date(request.body) is False:
             return HttpResponseNotFound('ImBuyin -- Email does not exist')
         return HttpResponse("ImBuyin -- Date Updated")
+    elif (request.method == 'DELETE'):
+        #Update Accept field
+        if cancel_date(request.body) is False:
+            return HttpResponseNotFound('ImBuyin -- Email does not exist')
+        return HttpResponse("ImBuyin -- Date Cancelled")
 
+def cancel_date(date):
+    json_date = json.loads(date)
+    try:
+        date_to_cancel = Date.objects.get(user=json_date['email'])        
+    except Exception as e:
+        print (e.message)
+        return False
+    if date_to_cancel:
+        date_to_cancel.accepted = False
+        date_to_cancel.confirmed_user = ''
+    date_to_cancel.save()
+    
 def create_date(date_data):
     enc_data = json.loads(date_data)
     try:
@@ -113,11 +130,11 @@ def create_date(date_data):
 
 def update_date(date):
     json_date = json.loads(date)
-    print json_date
-    accepted = False
+    #print json_date -- Debug
+    confirmed = False
     interested = False
-    if 'accepted' in json_date:
-       accepted = True
+    if 'confirmed_email' in json_date:
+       confirmed = True
     if 'interested_email' in json_date:
        interested = True
     try:
@@ -125,8 +142,9 @@ def update_date(date):
     except Exception:
         return False 
     if date_to_update:
-       if accepted:
-          date_to_update.accepted = json_date['accepted']
+       if confirmed:
+          date_to_update.accepted = True
+          date_to_update.confirmed_user = json_date['confirmed_email']
        if interested:
           print date_to_update.interested_users
           if date_to_update.interested_users is None:

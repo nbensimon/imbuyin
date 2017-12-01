@@ -20,6 +20,7 @@ class Date(models.Model):
 	accepted = models.BooleanField(default=False)
 	category = models.CharField(max_length=50, default='General')
 	interested_users = models.CharField(max_length=1000, default='')
+	confirmed_user = models.CharField(max_length=50, default='')
 
 class Feedback(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE,
