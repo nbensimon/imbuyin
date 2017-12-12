@@ -58,43 +58,99 @@ def date(request):
             return HttpResponseBadRequest('ImBuyin -- Date Not Created')
     	return HttpResponse('ImBuyin -- Date Created')
     elif (request.method == 'GET'):
-    	#Get all the dates!!!
-    	all_dates = serializers.serialize("json", Date.objects.all())
+        query_params = request.GET
+        user = ''
+        #get filtered dates
+        if query_params:
+          user = query_params.get('email')
+          show = query_params.get('show')
+          if show is None:
+            if user:
+               dates_for_email = serializers.serialize("json", 
+               Date.objects.filter(user__exact=user))
+               my_dates = {}
+               my_dates['my_dates'] = []
+
+               for date in json.loads(dates_for_email):
+                   my_dates['my_dates'].append(date['fields'])
+               #Add the interested users number to response
+               interested_user_count = 0
+               for date in my_dates.get('my_dates'):
+                 for interested_user in date.get('interested_users').split(';'):
+                   interested_user_count += 1
+                 date['interested_user_count'] = interested_user_count
+               return JsonResponse(my_dates, safe=False)   
+        
+        all_dates = serializers.serialize("json", Date.objects.all())
         #clean up the data
         json_potential_dates = {}
         json_potential_dates['potential_dates'] = []
         for date in json.loads(all_dates):
-            json_potential_dates['potential_dates'].append(date['fields'])
-    	#return JsonResponse(json.dumps(json_potential_dates), safe=False)
+            # don't add my date to the list
+            #print date['fields']['user'] # DEBUG
+            if user != date['fields']['user']: 
+               json_potential_dates['potential_dates'].append(date['fields'])
         return JsonResponse(json_potential_dates, safe=False)
     elif (request.method == 'PUT'):
         #Update Accept field
         if update_date(request.body) is False:
             return HttpResponseNotFound('ImBuyin -- Email does not exist')
         return HttpResponse("ImBuyin -- Date Updated")
+    elif (request.method == 'DELETE'):
+        #Update Accept field
+        if cancel_date(request.body) is False:
+            return HttpResponseNotFound('ImBuyin -- Email does not exist')
+        return HttpResponse("ImBuyin -- Date Cancelled")
 
+def cancel_date(date):
+    json_date = json.loads(date)
+    try:
+        date_to_cancel = Date.objects.get(user=json_date['email'])        
+    except Exception as e:
+        print (e.message)
+        return False
+    if date_to_cancel:
+        date_to_cancel.accepted = False
+        date_to_cancel.confirmed_user = ''
+    date_to_cancel.save()
+    
 def create_date(date_data):
     enc_data = json.loads(date_data)
     try:
         new_user = User(email=enc_data['email'])
         new_user.save()
         new_user.date_set.create(
-            date_place = enc_data['place'],
-            create_date = enc_data['when'],
+            where = enc_data['where'],
+            when = enc_data['when'],
             category = enc_data['category'],
             accepted = enc_data['accepted'])
     except Exception as e:
         print (e.message)
         return False
 
-def update_date(date_data):
-    enc_data = json.loads(date_data)
+def update_date(date):
+    json_date = json.loads(date)
+    #print json_date -- Debug
+    confirmed = False
+    interested = False
+    if 'confirmed_email' in json_date:
+       confirmed = True
+    if 'interested_email' in json_date:
+       interested = True
     try:
-        get_date_to_update = Date.objects.get(date_email=enc_data['email'])
+        date_to_update = Date.objects.get(user=json_date['email'])
     except Exception:
         return False 
-    if (get_date_to_update):
-        get_date_to_update.accepted = enc_data['accepted']
-    get_date_to_update.save()
+    if date_to_update:
+       if confirmed:
+          date_to_update.accepted = True
+          date_to_update.confirmed_user = json_date['confirmed_email']
+       if interested:
+          print date_to_update.interested_users
+          if date_to_update.interested_users is None:
+             date_to_update.interested_users = json_date['interested_email']
+          else:
+             date_to_update.interested_users += ';' + json_date['interested_email']
+    date_to_update.save()
 
 
