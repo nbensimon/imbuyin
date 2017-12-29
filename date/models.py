@@ -17,8 +17,9 @@ class Date(models.Model):
 		default='test@test.com')
 	where = models.TextField()
 	when = models.DateTimeField('date created')
-	accepted = models.BooleanField(default=False)
+	matched = models.BooleanField(default=False)
 	category = models.CharField(max_length=50, default='General')
+	imbuyin_value = models.DecimalField(max_digits=8, decimal_places = 2, default='0.00')
 	interested_users = models.CharField(max_length=1000, default='')
 	confirmed_user = models.CharField(max_length=50, default='')
 

@@ -92,12 +92,12 @@ def date(request):
                json_potential_dates['potential_dates'].append(date['fields'])
         return JsonResponse(json_potential_dates, safe=False)
     elif (request.method == 'PUT'):
-        #Update Accept field
+        #Update matched field
         if update_date(request.body) is False:
             return HttpResponseNotFound('ImBuyin -- Email does not exist')
         return HttpResponse("ImBuyin -- Date Updated")
     elif (request.method == 'DELETE'):
-        #Update Accept field
+        #Update matched field
         if cancel_date(request.body) is False:
             return HttpResponseNotFound('ImBuyin -- Email does not exist')
         return HttpResponse("ImBuyin -- Date Cancelled")
@@ -110,7 +110,7 @@ def cancel_date(date):
         print (e.message)
         return False
     if date_to_cancel:
-        date_to_cancel.accepted = False
+        date_to_cancel.matched = False
         date_to_cancel.confirmed_user = ''
     date_to_cancel.save()
     
@@ -122,8 +122,8 @@ def create_date(date_data):
         new_user.date_set.create(
             where = enc_data['where'],
             when = enc_data['when'],
-            category = enc_data['category'],
-            accepted = enc_data['accepted'])
+            imbuyin_value = enc_data['imbuyin_value'],
+            matched = enc_data['matched'])
     except Exception as e:
         print (e.message)
         return False
@@ -143,7 +143,7 @@ def update_date(date):
         return False 
     if date_to_update:
        if confirmed:
-          date_to_update.accepted = True
+          date_to_update.matched = True
           date_to_update.confirmed_user = json_date['confirmed_email']
        if interested:
           print date_to_update.interested_users
