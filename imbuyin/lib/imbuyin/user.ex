@@ -4,15 +4,19 @@ defmodule Imbuyin.User do
   import Ecto.Changeset
   alias Imbuyin.User
 
+  # Why not make email the pk: https://stackoverflow.com/questions/3804108/use-email-address-as-primary-key
+
+  @primary_key {:id, :id, autogenerate: false}
 
   schema "user" do
+    # Consider creating an email type that has validation - See Ecto.Type docs
+    # default='test@test.com'?
+    field :email, :string, distinct: :true
     # default = ""
     field :about, :string
     # small int default 18
     field :age, :integer
-    # primary key, default='test@test.com'
-    field :email, :string
-    # max length 1, char field
+    # max length 1, char field - what about lgbtq?
     field :gender, :string
 
     timestamps()
@@ -22,6 +26,6 @@ defmodule Imbuyin.User do
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, [:email, :gender, :age, :about])
-    |> validate_required([:email, :gender, :age, :about])
+    |> validate_required([:email, :gender, :age])
   end
 end

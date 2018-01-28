@@ -7,6 +7,7 @@ use Mix.Config
 
 # General application configuration
 config :imbuyin,
+  # Database setup
   ecto_repos: [Imbuyin.Repo]
 
 # Configures the endpoint

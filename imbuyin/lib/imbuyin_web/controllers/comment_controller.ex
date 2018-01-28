@@ -10,4 +10,11 @@ defmodule Imbuyin.CommentController do
     :not_implemented
     # json conn, %{"test": "data"}
   end
+
+  def post(conn, params) do
+    # try to update feedback with incoming post data. Doesn't validate, then Bad Request
+    # get associated user
+    # If success, return success
+    :not_implemented
+  end
 end
